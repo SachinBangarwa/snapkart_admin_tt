@@ -3,19 +3,16 @@ import 'package:provider/provider.dart';
 import 'package:snapkart_admin/category/model/category_model.dart';
 import 'package:snapkart_admin/category/provider/category_provider.dart';
 
-class UpdateCategoryScreen extends StatefulWidget {
-  const UpdateCategoryScreen({super.key});
+class AddCategoryScreen extends StatefulWidget {
+  const AddCategoryScreen({super.key});
 
   @override
-  State<UpdateCategoryScreen> createState() => _UpdateProductScreenState();
+  State<AddCategoryScreen> createState() => _AddCategoryScreenState();
 }
 
-class _UpdateProductScreenState extends State<UpdateCategoryScreen> {
+class _AddCategoryScreenState extends State<AddCategoryScreen> {
   final nameController = TextEditingController();
-  final descriptionController = TextEditingController();
-  final priceController = TextEditingController();
-  final categoryController = TextEditingController();
-  final sIdController = TextEditingController();
+  final vController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +21,7 @@ class _UpdateProductScreenState extends State<UpdateCategoryScreen> {
         backgroundColor: Colors.grey.shade300,
         elevation: 0,
         title: const Text(
-          'Update Product',
+          'Add Category',
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
@@ -43,21 +40,21 @@ class _UpdateProductScreenState extends State<UpdateCategoryScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             createTextField(nameController, 'Enter product name'),
-            createTextField(sIdController, 'Enter Product ID (S_ID)'),
+            createTextField(vController, 'Enter vCategory'),
             const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
-                onPressed: updateProductButton,
+                onPressed: addProductButton,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xff851717),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 50, vertical: 15),
                 ),
                 child: const Text(
-                  'Update Product',
+                  'Add Category',
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
@@ -68,36 +65,37 @@ class _UpdateProductScreenState extends State<UpdateCategoryScreen> {
     );
   }
 
-  void updateProductButton() async {
-    CategoryModel category = CategoryModel(
-      name: nameController.text,
-      sId: sIdController.text,
-    );
+  void addProductButton() async {
+    String name = nameController.text;
+    int v = int.parse(vController.text);
 
     CategoryProvider provider =
-        Provider.of<CategoryProvider>(context, listen: false);
+    Provider.of<CategoryProvider>(context, listen: false);
 
-    await provider.updateCategory(category);
-    if (mounted) {
-      if (provider.success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Category updated successfully'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        await provider.fetchCategory();
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Category not update error '),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-      nameController.clear();
-      sIdController.clear();
+   CategoryModel category=CategoryModel(
+     name: name,
+     iV: v,
+   );
+
+    await provider.addCategory(category);
+    if(mounted) {
+      provider.success ?
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Category added successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      ) : ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Category added unsuccessfulFully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Navigator.pop(context);
     }
+      nameController.clear();
+      vController.clear();
+
   }
 
   Widget createTextField(TextEditingController controller, String hintText) {

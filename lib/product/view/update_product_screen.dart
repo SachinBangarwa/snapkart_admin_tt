@@ -72,34 +72,39 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
   }
 
   void updateProductButton() async {
-    try {
-      Product product = Product(
-        name: nameController.text,
-        description: descriptionController.text,
-        category: categoryController.text,
-        price: int.parse(priceController.text),
-        sId: sIdController.text,
-      );
+    Product product = Product(
+      name: nameController.text,
+      description: descriptionController.text,
+      category: categoryController.text,
+      price: int.parse(priceController.text),
+      sId: sIdController.text,
+    );
 
-      ProductProvider provider =
-      Provider.of<ProductProvider>(context, listen: false);
+    ProductProvider provider =
+    Provider.of<ProductProvider>(context, listen: false);
 
-      await provider.updateProduct(product);
-
+    await provider.updateProduct(product);
+    if (mounted) {
+      provider.updateSuccess ?
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Product updated successfully!'),
           backgroundColor: Colors.green,
         ),
-      );
-    } catch (e) {
+      ) :
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to update product: $e'),
+        const SnackBar(
+          content: Text('Failed to update product: '),
           backgroundColor: Colors.red,
         ),
       );
+      await provider.fetchProduct();
     }
+    nameController.clear();
+    descriptionController.clear();
+    priceController.clear();
+    sIdController.clear();
+    categoryController.clear();
   }
 
   Widget createTextField(TextEditingController controller, String hintText) {

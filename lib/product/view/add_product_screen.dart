@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:snapkart_admin/category/model/category_model.dart';
-import 'package:snapkart_admin/category/provider/category_provider.dart';
-
-class UpdateCategoryScreen extends StatefulWidget {
-  const UpdateCategoryScreen({super.key});
+import 'package:snapkart_admin/product/model/product_model.dart';
+import 'package:snapkart_admin/product/provider/product_provider.dart';
+class AddProductScreen extends StatefulWidget {
+  const AddProductScreen({super.key});
 
   @override
-  State<UpdateCategoryScreen> createState() => _UpdateProductScreenState();
+  State<AddProductScreen> createState() => _AddProductScreenState();
 }
 
-class _UpdateProductScreenState extends State<UpdateCategoryScreen> {
+class _AddProductScreenState extends State<AddProductScreen> {
   final nameController = TextEditingController();
   final descriptionController = TextEditingController();
   final priceController = TextEditingController();
   final categoryController = TextEditingController();
-  final sIdController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +22,7 @@ class _UpdateProductScreenState extends State<UpdateCategoryScreen> {
         backgroundColor: Colors.grey.shade300,
         elevation: 0,
         title: const Text(
-          'Update Product',
+          'Add Product',
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
@@ -43,21 +41,23 @@ class _UpdateProductScreenState extends State<UpdateCategoryScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             createTextField(nameController, 'Enter product name'),
-            createTextField(sIdController, 'Enter Product ID (S_ID)'),
+            createTextField(descriptionController, 'Enter description'),
+            createTextField(priceController, 'Enter price'),
+            createTextField(categoryController, 'Enter category'),
             const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
-                onPressed: updateProductButton,
+                onPressed: addProductButton,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xff851717),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 50, vertical: 15),
                 ),
                 child: const Text(
-                  'Update Product',
+                  'Add Product',
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
@@ -68,36 +68,42 @@ class _UpdateProductScreenState extends State<UpdateCategoryScreen> {
     );
   }
 
-  void updateProductButton() async {
-    CategoryModel category = CategoryModel(
-      name: nameController.text,
-      sId: sIdController.text,
+  void addProductButton() async {
+    String name = nameController.text;
+    String description = descriptionController.text;
+    int price = int.parse(priceController.text);
+    String category = categoryController.text;
+
+    ProductProvider provider =
+    Provider.of<ProductProvider>(context, listen: false);
+
+    Product product = Product(
+      name: name,
+      description: description,
+      price: price,
+      category: category,
+    );
+    await provider.addProduct(product);
+   if(mounted){
+    provider.addSuccess?
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Product added successfully!'),
+        backgroundColor: Colors.green,
+      ),
+    ):ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Product added unsuccessfulFully!'),
+        backgroundColor: Colors.green,
+      ),
     );
 
-    CategoryProvider provider =
-        Provider.of<CategoryProvider>(context, listen: false);
-
-    await provider.updateCategory(category);
-    if (mounted) {
-      if (provider.success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Category updated successfully'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        await provider.fetchCategory();
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Category not update error '),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-      nameController.clear();
-      sIdController.clear();
-    }
+   nameController.clear();
+   descriptionController.clear();
+   priceController.clear();
+   categoryController.clear();
+   Navigator.pop(context);
+  }
   }
 
   Widget createTextField(TextEditingController controller, String hintText) {

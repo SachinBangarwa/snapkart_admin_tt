@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:snapkart_admin/product/model/product_model.dart';
 import 'package:snapkart_admin/product/provider/product_provider.dart';
+import 'package:snapkart_admin/product/view/add_product_screen.dart';
 
 class GetProductScreen extends StatefulWidget {
   const GetProductScreen({super.key});
@@ -17,16 +18,23 @@ class _GetProductScreenState extends State<GetProductScreen> {
     fetchProduct();
   }
 
-  void fetchProduct() {
+  Future fetchProduct()async {
     ProductProvider provider =
         Provider.of<ProductProvider>(context, listen: false);
-    provider.fetchProduct();
+   await provider.fetchProduct();
   }
 
   @override
   Widget build(BuildContext context) {
-    fetchProduct();
     return Scaffold(
+     floatingActionButton: FloatingActionButton(
+           onPressed: ()async {
+           await Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const AddProductScreen()));
+         await  fetchProduct();
+          },
+         heroTag: "uniqueFABHeroTag",
+          child: const Icon(Icons.add)),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.grey.shade300,
@@ -50,6 +58,7 @@ class _GetProductScreenState extends State<GetProductScreen> {
             itemCount: provider.product.length,
             itemBuilder: (context, index) {
               Product product = provider.product[index];
+              print(product.sId);
               return Card(
                 child: ListTile(
                   title: Text(
@@ -64,8 +73,9 @@ class _GetProductScreenState extends State<GetProductScreen> {
                         width: 5,
                       ),
                       IconButton(
-                          onPressed: () {
-                            provider.deleteProduct(product);
+                          onPressed: () async {
+                            await provider.deleteProduct(product);
+                            await provider.fetchProduct();
                           },
                           icon: const Icon(Icons.delete))
                     ],

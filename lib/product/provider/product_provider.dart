@@ -9,6 +9,8 @@ class ProductProvider extends ChangeNotifier {
   ProductService productService;
   List<Product> product = [];
   String? errorMessage;
+  bool addSuccess=false;
+  bool updateSuccess=false;
 
   Future<void> fetchProduct() async {
     try {
@@ -23,11 +25,8 @@ class ProductProvider extends ChangeNotifier {
 
   Future addProduct(Product product) async {
     try {
-      bool addSuccess = await productService.addProduct(product);
-      if (addSuccess) {
-        notifyListeners();
-        AppUtil.showToast('Product Add SuccessFull');
-      }
+       addSuccess = await productService.addProduct(product);
+     notifyListeners();
     } catch (e) {
       notifyListeners();
       AppUtil.showToast(e.toString());
@@ -36,10 +35,10 @@ class ProductProvider extends ChangeNotifier {
 
   Future updateProduct(Product product) async {
     try {
-      bool updateSuccess = await productService.updateProduct(product);
+       updateSuccess = await productService.updateProduct(product);
       if (updateSuccess) {
         notifyListeners();
-        AppUtil.showToast('Update product SuccessFull');
+       // AppUtil.showToast('Update product SuccessFull');
       }
     } catch (error) {
       AppUtil.showToast(error.toString());

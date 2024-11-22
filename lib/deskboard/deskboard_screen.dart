@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:snapkart_admin/auth/provider/auth_provider.dart';
+import 'package:snapkart_admin/auth/service/auth_shared_preferences.dart';
 import 'package:snapkart_admin/category/view/add_category_screen.dart';
 import 'package:snapkart_admin/category/view/get_category_screen.dart';
 import 'package:snapkart_admin/category/view/update_category_screen.dart';
 import 'package:snapkart_admin/product/view/add_product_screen.dart';
 import 'package:snapkart_admin/product/view/get_product_screen.dart';
 import 'package:snapkart_admin/product/view/update_product_screen.dart';
+import 'package:snapkart_admin/profile/profile_screen.dart';
 
 class DeskBoardScreen extends StatefulWidget {
   const DeskBoardScreen({super.key});
@@ -16,14 +20,10 @@ class DeskBoardScreen extends StatefulWidget {
 class _DeskBoardScreenState extends State<DeskBoardScreen> {
   List<Widget> screens = [
     const GetProductScreen(),
-    const AddProductScreen(),
     const UpdateProductScreen(),
     const GetCategoryScreen(),
-    const AddCategoryScreen(),
     const UpdateCategoryScreen(),
-    // const GetCategoryScreen(),
-    // const AddCategoryScreen(),
-    // const UpdateCategoryScreen(),
+    const ProfileScreen()
   ];
 
   int currentIndex = 0;
@@ -59,10 +59,6 @@ class _DeskBoardScreenState extends State<DeskBoardScreen> {
           label: 'Products',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.add_box_outlined),
-          label: 'Add Product',
-        ),
-        BottomNavigationBarItem(
           icon: Icon(Icons.edit_outlined),
           label: 'Update Product',
         ),
@@ -71,12 +67,11 @@ class _DeskBoardScreenState extends State<DeskBoardScreen> {
           label: 'Categories',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.add_circle_outline),
-          label: 'Add Category',
-        ),
-        BottomNavigationBarItem(
           icon: Icon(Icons.update_outlined),
           label: 'Update Category',
+        ),BottomNavigationBarItem(
+          icon: Icon(Icons.person),
+          label: 'Profile',
         ),
       ],
       type: BottomNavigationBarType.fixed,

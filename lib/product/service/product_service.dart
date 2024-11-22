@@ -1,14 +1,17 @@
 import 'dart:convert';
 
+import 'package:snapkart_admin/auth/service/auth_shared_preferences.dart';
 import 'package:snapkart_admin/core/api_endpoint.dart';
 import 'package:snapkart_admin/product/model/product_model.dart';
 import 'package:http/http.dart' as http;
 
-class ProductService {
+class ProductService  {
+  String apiKey='aihfj--qwnkqwr--jlkqwnjqw--jnkqwjnqwy';
   Future<List<Product>> fetchProduct() async {
     String url = ApiEndpoint.fetchProductUrl;
-    final response = await http.get(Uri.parse(url),
-        headers: {'x-api-key': 'aihfj--qwnkqwr--jlkqwnjqw--jnkqwjnqwy'});
+    Uri uri=Uri.parse(url);
+    final response = await http.get(uri,
+        headers: {'x-api-key': apiKey});
     if (response.statusCode == 200) {
       final mapList = jsonDecode(response.body);
       List<Product> productList = [];
@@ -22,31 +25,38 @@ class ProductService {
     throw 'Unable found product';
   }
   Future<bool> addProduct(Product product) async {
-    String url = ApiEndpoint.addProductUrl;
-    String jsonProduct = jsonEncode(product.toJson());
-    final response =
-        await http.post(Uri.parse(url), body: jsonProduct, headers: {
+    String? token = await AuthSharedPreferences.getToken();
+    final header={
       'Content-Type': 'application/json',
-      'Authorization':
-          'Bearer ${ApiEndpoint.token}',
-      'x-api-key': 'aihfj--qwnkqwr--jlkqwnjqw--jnkqwjnqwy'
-    });
+      'Authorization': 'Bearer $token',
+      'x-api-key': apiKey
+    };
+    String url = ApiEndpoint.addProductUrl;
+   Uri uri= Uri.parse(url);
+   final map=product.toJson();
+    String jsonProduct = jsonEncode(map);
+    final response =
+        await http.post(uri, body: jsonProduct, headers: header);
     if (response.statusCode == 201) {
       return true;
     } else {
+      print(token);
       throw 'Note Fount=>${response.statusCode}';
     }
   }
 
   Future<bool> updateProduct(Product product) async {
+    String? token = await AuthSharedPreferences.getToken();
     String url = ApiEndpoint.updateProductUrl + product.sId.toString();
-    final response = await http
-        .put(Uri.parse(url), body: jsonEncode(product.toJson()), headers: {
+    Uri uri= Uri.parse(url);
+    final header={
       'Content-Type': 'application/json',
-      'Authorization':
-          "Bearer ${ApiEndpoint.token}",
-      'x-api-key': 'aihfj--qwnkqwr--jlkqwnjqw--jnkqwjnqwy',
-    });
+      'Authorization': 'Bearer $token',
+      'x-api-key': apiKey
+    };
+    final map=product.toJson();
+    final response =
+    await http.put(uri, body: jsonEncode(map), headers: header);
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -55,13 +65,15 @@ class ProductService {
   }
 
   Future<bool> deleteProduct(Product product) async {
+    String? token = await AuthSharedPreferences.getToken();
     String url = ApiEndpoint.deleteProductUrl + product.sId.toString();
-    final response = await http.delete(Uri.parse(url), headers: {
+    Uri uri= Uri.parse(url);
+    final header={
       'Content-Type': 'application/json',
-      'Authorization':
-          "Bearer ${ApiEndpoint.token}",
-      'x-api-key': 'aihfj--qwnkqwr--jlkqwnjqw--jnkqwjnqwy',
-    });
+      'Authorization': 'Bearer $token',
+      'x-api-key': apiKey
+    };
+    final response = await http.delete(uri, headers:header);
     if (response.statusCode == 200) {
       return true;
     } else {
