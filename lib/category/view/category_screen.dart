@@ -3,15 +3,16 @@ import 'package:provider/provider.dart';
 import 'package:snapkart_admin/category/model/category_model.dart';
 import 'package:snapkart_admin/category/provider/category_provider.dart';
 import 'package:snapkart_admin/category/view/add_category_screen.dart';
+import 'package:snapkart_admin/category/view/category_detail_screen.dart';
 
-class GetCategoryScreen extends StatefulWidget {
-  const GetCategoryScreen({super.key});
+class CategoryScreen extends StatefulWidget {
+  const CategoryScreen({super.key});
 
   @override
-  State<GetCategoryScreen> createState() => _GetCategoryScreenState();
+  State<CategoryScreen> createState() => _CategoryScreenState();
 }
 
-class _GetCategoryScreenState extends State<GetCategoryScreen> {
+class _CategoryScreenState extends State<CategoryScreen> {
   @override
   void initState() {
     fetchCategory();
@@ -28,6 +29,7 @@ class _GetCategoryScreenState extends State<GetCategoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
+        backgroundColor:  const Color(0x546C4545),
         onPressed: () async {
           await Navigator.push(
               context,
@@ -54,21 +56,22 @@ class _GetCategoryScreenState extends State<GetCategoryScreen> {
           return ListView.builder(
               itemCount: provider.category.length,
               itemBuilder: (context, index) {
-                CategoryModel value = provider.category[index];
+                CategoryModel category = provider.category[index];
                 return Card(
                   child: ListTile(
-                    title: Text(
-                      value.name.toString(),
-                      style: const TextStyle(fontSize: 20, color: Colors.black),
-                    ),
-                    trailing: IconButton(
-                      onPressed: () async {
-                        await provider.deleteCategory(value);
-                        await provider.fetchCategory();
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    CategoryDetailScreen(category: category)));
                       },
-                      icon: const Icon(Icons.delete),
-                    ),
-                  ),
+                      title: Text(
+                        category.name.toString(),
+                        style:
+                            const TextStyle(fontSize: 20, color: Colors.black),
+                      ),
+                      trailing: Text("${1 + index}")),
                 );
               });
         },

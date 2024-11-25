@@ -1,12 +1,12 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AuthSharedPreferences{
+class StorageHelper{
 static String tokenKey='token';
  static Future saveToken(String token)async{
    SharedPreferences prefer=await SharedPreferences.getInstance();
    prefer.setString(tokenKey, token);
   }
-static Future<String?> getToken()async{
+static Future<String ?> getToken()async{
   SharedPreferences prefer=await SharedPreferences.getInstance();
  return prefer.getString(tokenKey);
 }

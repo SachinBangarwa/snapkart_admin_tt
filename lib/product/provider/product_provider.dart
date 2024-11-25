@@ -5,28 +5,37 @@ import 'package:snapkart_admin/product/service/product_service.dart';
 
 class ProductProvider extends ChangeNotifier {
   ProductProvider(this.productService);
-
   ProductService productService;
-  List<Product> product = [];
-  String? errorMessage;
-  bool addSuccess=false;
-  bool updateSuccess=false;
+  String? _errorMessage;
+  List<Product> _productList = [];
+   bool _isSuccess = false;
+   bool _isLoading=false;
+
+  String? get errorMessage => _errorMessage;
+
+  bool get isSuccess {return _isSuccess;}
+
+  List<Product> get productList=>_productList;
+
+  bool get isLoading=>_isLoading;
 
   Future<void> fetchProduct() async {
     try {
-      product = await productService.fetchProduct();
-      AppUtil.showToast('achieve product');
-      notifyListeners();
+      _errorMessage = null;
+      _isLoading=true;
+     // notifyListeners();
+      _productList = await productService.fetchProduct();
     } catch (msg) {
-      errorMessage = msg.toString();
-      notifyListeners();
+      _errorMessage = msg.toString();
     }
+    _isLoading=false;
+    notifyListeners();
   }
 
   Future addProduct(Product product) async {
     try {
-       addSuccess = await productService.addProduct(product);
-     notifyListeners();
+      _isSuccess = await productService.addProduct(product);
+      notifyListeners();
     } catch (e) {
       notifyListeners();
       AppUtil.showToast(e.toString());
@@ -35,25 +44,28 @@ class ProductProvider extends ChangeNotifier {
 
   Future updateProduct(Product product) async {
     try {
-       updateSuccess = await productService.updateProduct(product);
-      if (updateSuccess) {
+      _isSuccess = await productService.updateProduct(product);
+      if (_isSuccess) {
         notifyListeners();
-       // AppUtil.showToast('Update product SuccessFull');
       }
     } catch (error) {
       AppUtil.showToast(error.toString());
     }
   }
 
-  Future deleteProduct(Product product) async {
+  Future deleteProduct(String id) async {
     try {
-      bool updateSuccess = await productService.deleteProduct(product);
-      if (updateSuccess) {
+      _isLoading=true;
+      notifyListeners();
+      _errorMessage=null;
+      await productService.deleteProduct(id);
+      _isLoading=false;
         notifyListeners();
-        AppUtil.showToast('delete product SuccessFull');
-      }
     } catch (error) {
+      _isLoading=false;
+      _errorMessage=error.toString();
       AppUtil.showToast(error.toString());
+      notifyListeners();
     }
   }
 }

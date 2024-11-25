@@ -1,16 +1,16 @@
 import 'package:flutter/cupertino.dart';
-import 'package:snapkart_admin/auth/service/auth_shared_preferences.dart';
+import 'package:snapkart_admin/core/service/storage_helper.dart';
 
 class SplashProvider extends ChangeNotifier{
-    bool? isLogged;
-  Future checkLogged()async{
-    String? token=await AuthSharedPreferences.getToken();
+    bool isLogged=false;
+  Future<bool> checkLogged()async{
+    String? token=await StorageHelper.getToken();
     if(token!=null){
       isLogged=true;
     }else{
       isLogged=false;
     }
-    notifyListeners();
+    return isLogged;
 
   }
 

@@ -1,7 +1,10 @@
+
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:snapkart_admin/product/model/product_model.dart';
 import 'package:snapkart_admin/product/provider/product_provider.dart';
+
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
 
@@ -49,13 +52,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
               child: ElevatedButton(
                 onPressed: addProductButton,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xff851717),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 50, vertical: 15),
-                ),
+                    backgroundColor: const Color(0x806C4545)),
                 child: const Text(
                   'Add Product',
                   style: TextStyle(fontSize: 16, color: Colors.white),
@@ -75,7 +72,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     String category = categoryController.text;
 
     ProductProvider provider =
-    Provider.of<ProductProvider>(context, listen: false);
+        Provider.of<ProductProvider>(context, listen: false);
 
     Product product = Product(
       name: name,
@@ -84,26 +81,35 @@ class _AddProductScreenState extends State<AddProductScreen> {
       category: category,
     );
     await provider.addProduct(product);
-   if(mounted){
-    provider.addSuccess?
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Product added successfully!'),
-        backgroundColor: Colors.green,
-      ),
-    ):ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Product added unsuccessfulFully!'),
-        backgroundColor: Colors.green,
-      ),
-    );
-
-   nameController.clear();
-   descriptionController.clear();
-   priceController.clear();
-   categoryController.clear();
-   Navigator.pop(context);
-  }
+    if (context.mounted) {
+      if (provider.isSuccess) {
+       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+           elevation: 0,
+           behavior: SnackBarBehavior.floating,
+           backgroundColor: Colors.transparent,
+           content: AwesomeSnackbarContent(
+             title: "Add Product",
+             message: product.name.toString(),
+             contentType: ContentType.success,
+           )));
+        await provider.fetchProduct();
+        Navigator.pop(context);
+      } else {
+       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+           elevation: 0,
+           behavior: SnackBarBehavior.floating,
+           backgroundColor: Colors.transparent,
+           content: AwesomeSnackbarContent(
+           title: 'On Snap!',
+             message: 'Product add unsuccess',
+             contentType: ContentType.warning,
+       )));
+      }
+      nameController.clear();
+      descriptionController.clear();
+      priceController.clear();
+      categoryController.clear();
+    }
   }
 
   Widget createTextField(TextEditingController controller, String hintText) {

@@ -45,14 +45,9 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
             Center(
               child: ElevatedButton(
                 onPressed: addProductButton,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xff851717),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 50, vertical: 15),
-                ),
+               style: ElevatedButton.styleFrom(
+                 backgroundColor:  const Color(0x806C4545)
+               ),
                 child: const Text(
                   'Add Category',
                   style: TextStyle(fontSize: 16, color: Colors.white),

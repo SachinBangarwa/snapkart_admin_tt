@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:snapkart_admin/core/app_util.dart';
 import 'package:snapkart_admin/product/model/product_model.dart';
 import 'package:snapkart_admin/product/provider/product_provider.dart';
 
 class UpdateProductScreen extends StatefulWidget {
-  const UpdateProductScreen({super.key});
+  const UpdateProductScreen({super.key, required this.product});
+  final Product product;
 
   @override
   State<UpdateProductScreen> createState() => _UpdateProductScreenState();
@@ -15,20 +17,24 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
   final descriptionController = TextEditingController();
   final priceController = TextEditingController();
   final categoryController = TextEditingController();
-  final sIdController = TextEditingController();
+@override
+  void initState() {
+   textAsianController();
+    super.initState();
+  }
 
+void textAsianController() {
+   nameController.text=widget.product.name.toString();
+  descriptionController.text=widget.product.description.toString();
+  priceController.text=widget.product.price.toString();
+  categoryController.text=widget.product.category.toString();
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.grey.shade300,
-        elevation: 0,
-        title: Text(
+        title: const Text(
           'Update Product',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
         ),
       ),
       body: getBody(),
@@ -46,18 +52,12 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
             createTextField(descriptionController, 'Enter description'),
             createTextField(priceController, 'Enter price'),
             createTextField(categoryController, 'Enter category'),
-            createTextField(sIdController, 'Enter Product ID (S_ID)'),
             const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
                 onPressed: updateProductButton,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xff851717),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 50, vertical: 15),
+                style:ElevatedButton.styleFrom(
+                  backgroundColor:  const Color(0x806C4545),
                 ),
                 child: const Text(
                   'Update Product',
@@ -77,34 +77,21 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
       description: descriptionController.text,
       category: categoryController.text,
       price: int.parse(priceController.text),
-      sId: sIdController.text,
+      sId: widget.product.sId,
     );
 
     ProductProvider provider =
     Provider.of<ProductProvider>(context, listen: false);
-
     await provider.updateProduct(product);
-    if (mounted) {
-      provider.updateSuccess ?
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Product updated successfully!'),
-          backgroundColor: Colors.green,
-        ),
-      ) :
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to update product: '),
-          backgroundColor: Colors.red,
-        ),
-      );
-      await provider.fetchProduct();
+    if(mounted){
+      if(provider.isSuccess){
+        Navigator.pop(context);
+        AppUtil.showToast('Product update');
+       await provider.fetchProduct();
+      }
     }
-    nameController.clear();
-    descriptionController.clear();
-    priceController.clear();
-    sIdController.clear();
-    categoryController.clear();
+
+
   }
 
   Widget createTextField(TextEditingController controller, String hintText) {

@@ -4,31 +4,32 @@ import 'package:snapkart_admin/category/model/category_model.dart';
 import 'package:snapkart_admin/category/provider/category_provider.dart';
 
 class UpdateCategoryScreen extends StatefulWidget {
-  const UpdateCategoryScreen({super.key});
-
+  const UpdateCategoryScreen({super.key, required this.category});
+final CategoryModel category;
   @override
   State<UpdateCategoryScreen> createState() => _UpdateProductScreenState();
 }
 
 class _UpdateProductScreenState extends State<UpdateCategoryScreen> {
   final nameController = TextEditingController();
-  final descriptionController = TextEditingController();
-  final priceController = TextEditingController();
-  final categoryController = TextEditingController();
-  final sIdController = TextEditingController();
+  final ivController = TextEditingController();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    textAsianController();
+  }
+  void textAsianController(){
+    nameController.text=widget.category.name.toString();
+    ivController.text=widget.category.iV.toString();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.grey.shade300,
-        elevation: 0,
         title: const Text(
-          'Update Product',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
+          'Update Category',
         ),
       ),
       body: getBody(),
@@ -42,22 +43,17 @@ class _UpdateProductScreenState extends State<UpdateCategoryScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            createTextField(nameController, 'Enter product name'),
-            createTextField(sIdController, 'Enter Product ID (S_ID)'),
+            createTextField(nameController, 'Enter category name'),
+            createTextField(ivController, 'Enter category iv'),
             const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
                 onPressed: updateProductButton,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xff851717),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                  backgroundColor: const Color(0x806C4545),
                 ),
                 child: const Text(
-                  'Update Product',
+                  'Update Category',
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
@@ -71,9 +67,9 @@ class _UpdateProductScreenState extends State<UpdateCategoryScreen> {
   void updateProductButton() async {
     CategoryModel category = CategoryModel(
       name: nameController.text,
-      sId: sIdController.text,
+      sId: widget.category.sId,
+      iV: int.parse(ivController.text)
     );
-
     CategoryProvider provider =
         Provider.of<CategoryProvider>(context, listen: false);
 
@@ -86,6 +82,7 @@ class _UpdateProductScreenState extends State<UpdateCategoryScreen> {
             backgroundColor: Colors.green,
           ),
         );
+        Navigator.pop(context);
         await provider.fetchCategory();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -96,7 +93,7 @@ class _UpdateProductScreenState extends State<UpdateCategoryScreen> {
         );
       }
       nameController.clear();
-      sIdController.clear();
+      ivController.clear();
     }
   }
 

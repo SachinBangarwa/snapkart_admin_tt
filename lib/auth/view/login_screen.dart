@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:snapkart_admin/auth/model/user_model.dart';
 import 'package:snapkart_admin/auth/provider/auth_provider.dart';
 import 'package:snapkart_admin/auth/view/sing_up_screen.dart';
-import 'package:snapkart_admin/deskboard/deskboard_screen.dart';
+import 'package:snapkart_admin/dashboard/dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Login'),
       ),
       body: Padding(
@@ -53,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             loginButton(context);
                           },
                           child:
-                          provider.isLogged?const CircularProgressIndicator(): const Text("login"),
+                          provider.isLogged?const SpinKitThreeBounce(color: Colors.red,size: 15,): const Text("login"),
                         ),
                       ),
                       const SizedBox(width: 20,),
@@ -79,10 +81,12 @@ class _LoginScreenState extends State<LoginScreen> {
     AuthProvider authProvider =
     Provider.of<AuthProvider>(context, listen: false);
     await authProvider.login(userModel);
-    if (authProvider.isLoginAuthenticated) {
+    if (authProvider.isAuthenticated) {
       if(context.mounted){
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => const DeskBoardScreen()));
+            context, MaterialPageRoute(builder: (context) => const DashBoardScreen()));
       }}
+    nameController.clear();
+    passwordController.clear();
   }
 }

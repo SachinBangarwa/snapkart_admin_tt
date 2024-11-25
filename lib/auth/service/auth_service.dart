@@ -16,7 +16,7 @@ class AuthService {
       final token=map['token'];
       return token;
     }else{
-      throw 'not achieve the token';
+      throw 'correct password/email';
     }
   }
   Future<bool> singUp(UserModel user) async {

@@ -1,40 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:snapkart_admin/core/app_util.dart';
 import 'package:snapkart_admin/product/model/product_model.dart';
 import 'package:snapkart_admin/product/provider/product_provider.dart';
 import 'package:snapkart_admin/product/view/add_product_screen.dart';
+import 'package:snapkart_admin/product/view/product_detail_screen.dart';
 
-class GetProductScreen extends StatefulWidget {
-  const GetProductScreen({super.key});
+class ProductScreen extends StatefulWidget {
+  const ProductScreen({super.key});
 
   @override
-  State<GetProductScreen> createState() => _GetProductScreenState();
+  State<ProductScreen> createState() => _GetProductScreenState();
 }
 
-class _GetProductScreenState extends State<GetProductScreen> {
+class _GetProductScreenState extends State<ProductScreen> {
   @override
   void initState() {
     super.initState();
     fetchProduct();
   }
 
-  Future fetchProduct()async {
+  Future fetchProduct() async {
     ProductProvider provider =
         Provider.of<ProductProvider>(context, listen: false);
-   await provider.fetchProduct();
+    await provider.fetchProduct();
+    AppUtil.showToast(provider.errorMessage.toString());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     floatingActionButton: FloatingActionButton(
-           onPressed: ()async {
-           await Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const AddProductScreen()));
-         await  fetchProduct();
-          },
-         heroTag: "uniqueFABHeroTag",
-          child: const Icon(Icons.add)),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.grey.shade300,
@@ -48,6 +43,17 @@ class _GetProductScreenState extends State<GetProductScreen> {
         ),
       ),
       body: getBody(),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0x546C4545),
+        onPressed: () async {
+          await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const AddProductScreen()));
+        },
+        heroTag: 'start',
+        child: const Icon(Icons.add,),
+      ),
     );
   }
 
@@ -55,35 +61,32 @@ class _GetProductScreenState extends State<GetProductScreen> {
     return Consumer<ProductProvider>(
       builder: (context, provider, child) {
         return ListView.builder(
-            itemCount: provider.product.length,
+            itemCount: provider.productList.length,
             itemBuilder: (context, index) {
-              Product product = provider.product[index];
-              print(product.sId);
+              Product product = provider.productList[index];
               return Card(
                 child: ListTile(
+                  onTap: () {
+                    buildOnTabListTile(context, product);
+                  },
                   title: Text(
                     product.name.toString(),
                   ),
                   subtitle: Text('\$${product.price}'),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(product.description.toString()),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      IconButton(
-                          onPressed: () async {
-                            await provider.deleteProduct(product);
-                            await provider.fetchProduct();
-                          },
-                          icon: const Icon(Icons.delete))
-                    ],
-                  ),
+                  trailing: Text('${1+index.toInt()}'),
                 ),
               );
             });
       },
     );
+  }
+
+  void buildOnTabListTile(BuildContext context, Product product) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ProductDetailScreen(
+                  product: product,
+                )));
   }
 }
