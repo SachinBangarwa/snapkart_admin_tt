@@ -36,7 +36,7 @@ class CategoryService {
 
   Future<bool> updateCategory(CategoryModel category) async {
     final header = await AppConstant.getHeader();
-    String url = ApiEndpoint.putCategoryId(category.sId.toString());
+    String url = ApiEndpoint.categoryId(category.sId.toString());
     final response = await http.put(Uri.parse(url),
         body:AppConstant.jsonCategoryBody(category),
         headers: header);
@@ -48,7 +48,7 @@ class CategoryService {
   }
 
   Future<bool> deleteCategory(String id) async {
-    String url = ApiEndpoint.putCategoryId(id.toString());
+    String url = ApiEndpoint.categoryId(id.toString());
     final header = await AppConstant.getHeader();
     final response = await http.delete(Uri.parse(url), headers: header);
     if (response.statusCode == 200) {

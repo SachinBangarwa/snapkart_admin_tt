@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:snapkart_admin/core/app_util.dart';
@@ -52,7 +53,9 @@ class _GetProductScreenState extends State<ProductScreen> {
                   builder: (context) => const AddProductScreen()));
         },
         heroTag: 'start',
-        child: const Icon(Icons.add,),
+        child: const Icon(
+          Icons.add,
+        ),
       ),
     );
   }
@@ -60,33 +63,54 @@ class _GetProductScreenState extends State<ProductScreen> {
   Widget getBody() {
     return Consumer<ProductProvider>(
       builder: (context, provider, child) {
-        return ListView.builder(
-            itemCount: provider.productList.length,
-            itemBuilder: (context, index) {
-              Product product = provider.productList[index];
-              return Card(
-                child: ListTile(
-                  onTap: () {
-                    buildOnTabListTile(context, product);
-                  },
-                  title: Text(
-                    product.name.toString(),
-                  ),
-                  subtitle: Text('\$${product.price}'),
-                  trailing: Text('${1+index.toInt()}'),
-                ),
-              );
-            });
+        return Stack(
+          children: [
+            ListView.builder(
+                itemCount: provider.productList.length,
+                itemBuilder: (context, index) {
+                  Product product = provider.productList[index];
+                  return GestureDetector(
+                    onLongPressStart: (detail)async{
+                        final provider = Provider.of<ProductProvider>(context, listen: false);
+                      await  provider.deleteProduct(product.id.toString());
+                      await provider.fetchProduct();
+
+                    },
+                    child: Card(
+                      child: ListTile(
+                        onTap: () {
+                          buildOnTabListTile(context, product);
+                        },
+                        leading:product.image != null && product.image!.isNotEmpty
+                            ? Image.network(
+                          product.image!,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(Icons.image);
+                          },
+                        )
+                            : const Icon(Icons.broken_image),
+                        title: Text(
+                          product.name.toString(),
+                        ),
+                        subtitle: Text('\$${product.price}'),
+                        trailing: Text('${1 + index.toInt()}'),
+                      ),
+                    ),
+                  );
+                }),
+            AppUtil.flutterSpinCit(provider),
+          ],
+        );
       },
     );
   }
+}
 
-  void buildOnTabListTile(BuildContext context, Product product) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => ProductDetailScreen(
-                  product: product,
-                )));
-  }
+void buildOnTabListTile(context, Product product) {
+  Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => ProductDetailScreen(
+                product: product,
+              )));
 }

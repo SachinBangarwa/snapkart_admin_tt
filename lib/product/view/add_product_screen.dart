@@ -1,6 +1,8 @@
+import 'dart:io';
 
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:snapkart_admin/product/model/product_model.dart';
 import 'package:snapkart_admin/product/provider/product_provider.dart';
@@ -17,6 +19,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final descriptionController = TextEditingController();
   final priceController = TextEditingController();
   final categoryController = TextEditingController();
+  final discountAmountController = TextEditingController();
+  final categoryIdController = TextEditingController();
+  final stockController = TextEditingController();
+  final imageController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -47,17 +53,44 @@ class _AddProductScreenState extends State<AddProductScreen> {
             createTextField(descriptionController, 'Enter description'),
             createTextField(priceController, 'Enter price'),
             createTextField(categoryController, 'Enter category'),
+            createTextField(discountAmountController, 'Enter discountAmount'),
+            createTextField(stockController, 'Enter stock'),
+            createTextField(imageController, 'Enter image url'),
             const SizedBox(height: 20),
-            Center(
-              child: ElevatedButton(
-                onPressed: addProductButton,
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0x806C4545)),
-                child: const Text(
-                  'Add Product',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ElevatedButton(
+                  style: IconButton.styleFrom(
+                     backgroundColor: const Color(0x806C4545),
+                    padding: const EdgeInsets.symmetric(horizontal: 15)
+                  ),
+                    onPressed: () async {
+                      await onTabGallery();
+                    },
+                    child: const Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Icon(Icons.image,color: Colors.white,),
+                        SizedBox(width: 5,),
+                        Text(
+                          'Gallery',
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ],
+                    )),
+                ElevatedButton(
+                  onPressed: addProductButton,
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0x806C4545)),
+                  child: const Text(
+                    'Add Product',
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
                 ),
-              ),
+              ],
             ),
           ],
         ),
@@ -65,45 +98,59 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
+  Future<void> onTabGallery() async {
+    final provider = Provider.of<ProductProvider>(context, listen: false);
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+   await provider.getImagePath(image);
+    imageController.text=provider.path.toString();
+  }
+
   void addProductButton() async {
+    ProductProvider provider =
+    Provider.of<ProductProvider>(context, listen: false);
     String name = nameController.text;
     String description = descriptionController.text;
-    int price = int.parse(priceController.text);
+    double price = double.parse(priceController.text);
     String category = categoryController.text;
-
-    ProductProvider provider =
-        Provider.of<ProductProvider>(context, listen: false);
-
+    String image = imageController.text=provider.path.toString();
+    double  discountAmount= double.parse(discountAmountController.text);
+    int stock =int.parse (stockController.text);
     Product product = Product(
       name: name,
       description: description,
       price: price,
-      category: category,
+      categoryId: category,
+      stock: stock,
+      image: image,
+      discountAmount: discountAmount,
+
     );
     await provider.addProduct(product);
-    if (context.mounted) {
-      if (provider.isSuccess) {
-       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-           elevation: 0,
-           behavior: SnackBarBehavior.floating,
-           backgroundColor: Colors.transparent,
-           content: AwesomeSnackbarContent(
-             title: "Add Product",
-             message: product.name.toString(),
-             contentType: ContentType.success,
-           )));
+
+    if (provider.isSuccess) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            elevation: 0,
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.transparent,
+            content: AwesomeSnackbarContent(
+              title: "Add Product",
+              message: product.name.toString(),
+              contentType: ContentType.success,
+            )));
         await provider.fetchProduct();
         Navigator.pop(context);
       } else {
-       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-           elevation: 0,
-           behavior: SnackBarBehavior.floating,
-           backgroundColor: Colors.transparent,
-           content: AwesomeSnackbarContent(
-           title: 'On Snap!',
-             message: 'Product add unsuccess',
-             contentType: ContentType.warning,
-       )));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            elevation: 0,
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.transparent,
+            content: AwesomeSnackbarContent(
+              title: 'On Snap!',
+              message: 'Product add unSuccess',
+              contentType: ContentType.warning,
+            )));
       }
       nameController.clear();
       descriptionController.clear();

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:snapkart_admin/core/app_util.dart';
 import 'package:snapkart_admin/product/model/product_model.dart';
@@ -5,30 +7,43 @@ import 'package:snapkart_admin/product/service/product_service.dart';
 
 class ProductProvider extends ChangeNotifier {
   ProductProvider(this.productService);
+
   ProductService productService;
   String? _errorMessage;
   List<Product> _productList = [];
-   bool _isSuccess = false;
-   bool _isLoading=false;
+  bool _isSuccess = false;
+  bool _isLoading = false;
+  String? _path;
 
   String? get errorMessage => _errorMessage;
 
   bool get isSuccess {return _isSuccess;}
 
-  List<Product> get productList=>_productList;
+  List<Product> get productList => _productList;
 
-  bool get isLoading=>_isLoading;
+  bool get isLoading => _isLoading;
+
+  String? get path => _path;
+
+  Future<void> getImagePath( image) async {
+    if (image != null) {
+      _path = image.path;
+      notifyListeners();
+    }else{
+      print('Image not select');
+    }
+  }
 
   Future<void> fetchProduct() async {
     try {
       _errorMessage = null;
-      _isLoading=true;
-     // notifyListeners();
+      _isLoading = true;
+      // notifyListeners();
       _productList = await productService.fetchProduct();
     } catch (msg) {
       _errorMessage = msg.toString();
     }
-    _isLoading=false;
+    _isLoading = false;
     notifyListeners();
   }
 
@@ -55,15 +70,15 @@ class ProductProvider extends ChangeNotifier {
 
   Future deleteProduct(String id) async {
     try {
-      _isLoading=true;
+      _isLoading = true;
       notifyListeners();
-      _errorMessage=null;
+      _errorMessage = null;
       await productService.deleteProduct(id);
-      _isLoading=false;
-        notifyListeners();
+      _isLoading = false;
+      notifyListeners();
     } catch (error) {
-      _isLoading=false;
-      _errorMessage=error.toString();
+      _isLoading = false;
+      _errorMessage = error.toString();
       AppUtil.showToast(error.toString());
       notifyListeners();
     }

@@ -30,7 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           IconButton(onPressed: (){
             ScaffoldMessenger.of(context).showSnackBar( const SnackBar(
               elevation: 0,
-             behavior: SnackBarBehavior.floating,
+              behavior: SnackBarBehavior.floating,
               backgroundColor: Colors.transparent,
               content: AwesomeSnackbarContent(
                 title: 'On Snap!',
@@ -49,7 +49,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           IconButton(
               onPressed: () async {
                 final provider =
-                    Provider.of<AuthProvider>(context, listen: false);
+                Provider.of<AuthProvider>(context, listen: false);
                 await provider.loggedOut();
                 if (provider.errorMessage == null) {
                   if (context.mounted) {

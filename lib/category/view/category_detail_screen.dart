@@ -3,10 +3,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:snapkart_admin/category/model/category_model.dart';
 import 'package:snapkart_admin/category/provider/category_provider.dart';
-import 'package:snapkart_admin/category/view/category_screen.dart';
 import 'package:snapkart_admin/category/view/update_category_screen.dart';
 import 'package:snapkart_admin/core/app_util.dart';
-import 'package:snapkart_admin/dashboard/dashboard_screen.dart';
 
 class CategoryDetailScreen extends StatelessWidget {
   const CategoryDetailScreen({super.key, required this.category});

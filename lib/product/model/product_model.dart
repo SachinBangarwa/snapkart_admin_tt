@@ -1,36 +1,55 @@
 class Product {
-  String? sId;
-  String? name;
-  String? description;
-  int? price;
-  String? category;
-  int? iV;
+  final String? id;
+  final String name;
+  final double price;
+  final String? image;
+  final String description;
+  final double? discountAmount;
+  final String categoryId;
+  final int stock;
+  final int? created;
+  final int? modified;
 
-  Product(
-      {this.sId,
-        this.name,
-        this.description,
-        this.price,
-        this.category,
-        this.iV});
+  Product({
+    this.id,
+    required this.name,
+    required this.price,
+    required this.description,
+    this.discountAmount,
+    required this.categoryId,
+    required this.stock,
+    this.image,
+    this.created,
+    this.modified,
+  });
 
-  Product.fromJson(Map<String, dynamic> json) {
-    sId = json['_id'];
-    name = json['name'];
-    description = json['description'];
-    price = json['price'];
-    category = json['category'];
-    iV = json['__v'];
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      id: json["_id"] as String?,
+      name: json['name'] as String,
+      price: (json['price'] as num).toDouble(),
+      image: json['image'] as String?,
+      description: json['description']??'',
+      discountAmount: (json['discountAmount'] as num?)?.toDouble(),
+    categoryId: json['categoryId']??'hhh',
+      stock: json['stock']??0 as int?,
+      created: json['created']??0 as int?,
+      modified: json['modified']??0 as int?,
+    );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data =<String, dynamic>{};
-    data['_id'] = sId;
-    data['name'] = name;
-    data['description'] = description;
-    data['price'] = price;
-    data['category'] = category;
-    data['__v'] = iV;
-    return data;
+    return {
+      "_id": id,
+      'name': name,
+      'price': price,
+      'image': image,
+      'description': description,
+      'discountAmount': discountAmount,
+     'categoryId': categoryId,
+      'stock': stock,
+      'created': created,
+      'modified': modified,
+    };
   }
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:snapkart_admin/card/card_screen.dart';
+import 'package:snapkart_admin/cart/view/cart_screen.dart';
 import 'package:snapkart_admin/category/view/category_screen.dart';
 import 'package:snapkart_admin/product/view/product_screen.dart';
-import 'package:snapkart_admin/profile/profile_screen.dart';
+import 'package:snapkart_admin/profile/view/profile_view.dart';
 
 class DashBoardScreen extends StatefulWidget {
   const DashBoardScreen({super.key});
@@ -15,7 +15,7 @@ class _DeskBoardScreenState extends State<DashBoardScreen> {
   List<Widget> screens = [
     const ProductScreen(),
     const CategoryScreen(),
-    const CardScreen(),
+    const CartScreen(),
     const ProfileScreen()
   ];
 
@@ -57,7 +57,7 @@ class _DeskBoardScreenState extends State<DashBoardScreen> {
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.card_giftcard),
-          label: 'Card',
+          label: 'Cart',
         ),BottomNavigationBarItem(
           icon: Icon(Icons.person),
           label: 'Profile',

@@ -17,6 +17,10 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
   final descriptionController = TextEditingController();
   final priceController = TextEditingController();
   final categoryController = TextEditingController();
+  final discountAmountController = TextEditingController();
+  final categoryIdController = TextEditingController();
+  final stockController = TextEditingController();
+  final imageController = TextEditingController();
 @override
   void initState() {
    textAsianController();
@@ -27,8 +31,26 @@ void textAsianController() {
    nameController.text=widget.product.name.toString();
   descriptionController.text=widget.product.description.toString();
   priceController.text=widget.product.price.toString();
-  categoryController.text=widget.product.category.toString();
+  //categoryController.text=widget.product.categoryId.toString();
+  discountAmountController.text=widget.product.discountAmount.toString();
+  //categoryIdController.text=widget.product.categoryId.toString();
+  stockController.text=widget.product.stock.toString();
+  imageController.text=widget.product.image.toString();
+
 }
+@override
+  void dispose() {
+    // TODO: implement dispose
+  nameController.dispose();
+  discountAmountController.dispose();
+  descriptionController.dispose();
+  stockController.dispose();
+  imageController.dispose();
+  categoryController.dispose();
+  priceController.dispose();
+  categoryIdController.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,6 +74,10 @@ void textAsianController() {
             createTextField(descriptionController, 'Enter description'),
             createTextField(priceController, 'Enter price'),
             createTextField(categoryController, 'Enter category'),
+            createTextField(discountAmountController, 'Enter discountAmount'),
+            createTextField(stockController, 'Enter stock'),
+            createTextField(imageController, 'Enter image'),
+            createTextField(categoryIdController, 'Enter categoryId'),
             const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
@@ -75,9 +101,12 @@ void textAsianController() {
     Product product = Product(
       name: nameController.text,
       description: descriptionController.text,
-      category: categoryController.text,
-      price: int.parse(priceController.text),
-      sId: widget.product.sId,
+    categoryId: categoryController.text,
+      price: double.parse(priceController.text),
+      stock: int.parse(stockController.text),
+      discountAmount: double.parse(discountAmountController.text),
+      image: imageController.text,
+      id: widget.product.id,
     );
 
     ProductProvider provider =
