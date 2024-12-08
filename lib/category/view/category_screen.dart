@@ -40,14 +40,16 @@ class _CategoryScreenState extends State<CategoryScreen> {
         child: const Icon(Icons.add),
       ),
       appBar: AppBar(
+    centerTitle: true,
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.grey.shade300,
+        backgroundColor: const Color(0xFFE0F2F1),
         elevation: 0,
         title: const Text(
           ' Category',
           style: TextStyle(
-            color: Colors.black,
+            color: Colors.teal,
             fontWeight: FontWeight.bold,
+    fontSize: 24
           ),
         ),
       ),

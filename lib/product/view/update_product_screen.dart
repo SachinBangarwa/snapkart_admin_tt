@@ -31,7 +31,6 @@ void textAsianController() {
    nameController.text=widget.product.name.toString();
   descriptionController.text=widget.product.description.toString();
   priceController.text=widget.product.price.toString();
-  //categoryController.text=widget.product.categoryId.toString();
   discountAmountController.text=widget.product.discountAmount.toString();
   //categoryIdController.text=widget.product.categoryId.toString();
   stockController.text=widget.product.stock.toString();

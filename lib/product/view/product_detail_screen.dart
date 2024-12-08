@@ -41,16 +41,18 @@ class ProductDetailScreen extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child:Column(
-                children: [
-                  buildRow('Name', product.name.toString()),
-                  buildRow('Price', product.price.toString()),
-                  buildRow('Category', product.categoryId.toString()),
-                  buildRow('Stock', product.stock.toString()),
-                  buildRow('DiscountAmount', product.discountAmount?.toString() ?? ''),
-                  buildImageRow('Image', product.image),
-                  Text(product.description.toString()),
-                ],
+              child:SingleChildScrollView(
+                child: Column(
+                  children: [
+                    buildRow('Name', product.name.toString()),
+                    buildRow('Price', product.price.toString()),
+                    buildRow('Category', product.categoryId.toString()),
+                    buildRow('Stock', product.stock.toString()),
+                    buildRow('DiscountAmount', product.discountAmount?.toString() ?? ''),
+                    buildImageRow('Image', product.image),
+                    Text(product.description.toString()),
+                  ],
+                ),
               ),
             ),
             AppUtil.flutterSpinCit(provider),

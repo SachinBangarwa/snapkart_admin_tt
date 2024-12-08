@@ -16,7 +16,8 @@ class CartApiService {
       final json = jsonDecode(response.body);
       return CartResponse.fromJson(json);
     } else {
-      throw 'Unable to fetch cart in item';
+      final json = jsonDecode(response.body);
+      throw json['message'] ?? 'unable to fetch';
     }
   }
 
@@ -34,7 +35,8 @@ class CartApiService {
     if (response.statusCode == 200) {
       return true;
     } else {
-      throw 'Unable to Update cart in item';
+      final json = jsonDecode(response.body);
+      throw json['message'] ?? 'Unable to Update cart in item';
     }
   }
 
@@ -46,7 +48,8 @@ class CartApiService {
     if (response.statusCode == 201) {
       return true;
     }
-    throw 'plz try again cart response check';
+    final json = jsonDecode(response.body);
+    throw json['message'] ?? 'Unable to add cart in item';
   }
 
   Future<bool> deleteCartItem(String id) async {
@@ -56,6 +59,18 @@ class CartApiService {
     if (response.statusCode == 200) {
       return true;
     }
-    throw 'plz try again cart response check';
+    final json = jsonDecode(response.body);
+    throw json['message'] ?? 'unable to delete';
+  }
+
+  Future<bool> clearCartItem() async {
+    String url = ApiEndpoint.cartUrl;
+    final header = await AppConstant.getHeader();
+    http.Response response = await http.delete(Uri.parse(url), headers: header);
+    if (response.statusCode == 200) {
+      return true;
+    }
+    final json = jsonDecode(response.body);
+    throw json['message'] ?? 'plz try again cart response check';
   }
 }

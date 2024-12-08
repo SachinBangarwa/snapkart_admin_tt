@@ -38,7 +38,7 @@ class ProductProvider extends ChangeNotifier {
     try {
       _errorMessage = null;
       _isLoading = true;
-      // notifyListeners();
+      notifyListeners();
       _productList = await productService.fetchProduct();
     } catch (msg) {
       _errorMessage = msg.toString();

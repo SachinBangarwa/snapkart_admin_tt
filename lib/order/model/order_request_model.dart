@@ -1,4 +1,4 @@
-import 'package:snapkart_admin/order/model/ordel_item_model.dart';
+import 'package:snapkart_admin/order/model/order_item_model.dart';
 import 'package:snapkart_admin/order/model/shipping_address_model.dart';
 
 class OrderRequestModel {

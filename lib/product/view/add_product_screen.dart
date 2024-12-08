@@ -113,7 +113,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     String description = descriptionController.text;
     double price = double.parse(priceController.text);
     String category = categoryController.text;
-    String image = imageController.text=provider.path.toString();
+    String image = imageController.text;
     double  discountAmount= double.parse(discountAmountController.text);
     int stock =int.parse (stockController.text);
     Product product = Product(

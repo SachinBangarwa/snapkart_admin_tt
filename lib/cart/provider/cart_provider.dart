@@ -47,6 +47,7 @@ class CartProvider extends ChangeNotifier {
       notifyListeners();
       _cartResponse = await cartApiService.fetchCartItem();
     } catch (error) {
+      _cartResponse=null;
       socketException(error);
     } finally {
       _isLoading = false;
@@ -75,6 +76,23 @@ class CartProvider extends ChangeNotifier {
       bool success = await cartApiService.deleteCartItem(id);
       if (success) {
         AppUtil.showToast('cart remove successFull');
+        await cartFetchItem();
+      }
+    }catch(error){
+      socketException(error);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  } Future<void> clearCartItem()async{
+    try{
+      conditionHandle();
+      notifyListeners();
+      bool success = await cartApiService.clearCartItem();
+      await cartFetchItem();
+      if (success) {
+        AppUtil.showToast('cart clear successFull');
+        await cartFetchItem();
       }
     }catch(error){
       socketException(error);

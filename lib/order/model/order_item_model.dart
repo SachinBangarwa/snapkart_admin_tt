@@ -1,10 +1,10 @@
 class OrderItem {
   String product;
   String name;
-  int quantity;
-  int price;
-  int discountAmount;
-  int totalPrice;
+  num quantity;
+  num price;
+  num discountAmount;
+  num totalPrice;
 
   OrderItem({
     required this.product,
@@ -17,8 +17,8 @@ class OrderItem {
 
   factory OrderItem.fromJson(Map<String, dynamic> json) {
     return OrderItem(
-      product: json['product'],
-      name: json['name'],
+      product: json['product']??'',
+      name: json['name']??'',
       quantity: json['quantity'],
       price: json['price'],
       discountAmount: json['discountAmount'],

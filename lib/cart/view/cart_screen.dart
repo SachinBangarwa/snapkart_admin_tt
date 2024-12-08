@@ -3,6 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:snapkart_admin/cart/model/cart_item_model.dart';
 import 'package:snapkart_admin/cart/model/cart_model.dart';
 import 'package:snapkart_admin/cart/provider/cart_provider.dart';
+import 'package:snapkart_admin/order/model/order_item_model.dart';
+import 'package:snapkart_admin/order/model/order_request_model.dart';
+import 'package:snapkart_admin/order/model/shipping_address_model.dart';
+import 'package:snapkart_admin/order/provider/order_api_provider.dart';
 import 'package:snapkart_admin/profile/view/add_shipping_address_view.dart';
 
 class CartScreen extends StatefulWidget {
@@ -25,7 +29,7 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFFE0F2F1), // Light teal background
+        backgroundColor: const Color(0xFFE0F2F1),
         elevation: 0,
         title: const Text(
           'Cart',
@@ -56,7 +60,7 @@ class _CartScreenState extends State<CartScreen> {
       padding: const EdgeInsets.all(8.0),
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xffa35555),
+          color: Colors.indigoAccent,
           borderRadius: BorderRadius.circular(8),
         ),
         padding: const EdgeInsets.all(12),
@@ -64,7 +68,8 @@ class _CartScreenState extends State<CartScreen> {
           children: [
             buildSummaryRow('SubTotal', provider.cartResponse?.subtotal ?? 0),
             const SizedBox(height: 6),
-            buildSummaryRow('Discount', provider.cartResponse?.totalDiscount ?? 0),
+            buildSummaryRow(
+                'Discount', provider.cartResponse?.totalDiscount ?? 0),
           ],
         ),
       ),
@@ -101,30 +106,38 @@ class _CartScreenState extends State<CartScreen> {
         padding: const EdgeInsets.all(8.0),
         itemCount: provider.cartResponse?.items?.length ?? 0,
         itemBuilder: (context, index) {
-          CartItem item = provider.cartResponse!.items![index];
-          return Container(
-            margin: const EdgeInsets.only(bottom: 8),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.grey,
-                  blurRadius: 4,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                buildDetailRow('Product', item.product?.name ?? ''),
-                const SizedBox(height: 8),
-                buildDetailRow('Price', item.product?.price.toString() ?? '0'),
-                const SizedBox(height: 8),
-                buildQuantityChange('Quantity', item),
-              ],
+          CartItem cartItem = provider.cartResponse!.items![index];
+          return GestureDetector(
+            onHorizontalDragEnd: (detail) async {
+              if (detail.primaryVelocity! >= 0) {
+                await provider.deleteCartItem(cartItem.product!.id!.toString());
+              }
+            },
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.grey,
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  buildDetailRow('Product', cartItem.product?.name ?? ''),
+                  const SizedBox(height: 8),
+                  buildDetailRow(
+                      'Price', cartItem.product?.price.toString() ?? '0'),
+                  const SizedBox(height: 8),
+                  buildQuantityChange('Quantity', cartItem),
+                ],
+              ),
             ),
           );
         },
@@ -164,10 +177,10 @@ class _CartScreenState extends State<CartScreen> {
           children: [
             IconButton(
               onPressed: () {
-                int quantity = cartItem.quantity ?? 0;
+                num quantity = cartItem.quantity ?? 0;
                 quantity--;
                 if (quantity >= 1) {
-                      cartItem.quantity = quantity;
+                  cartItem.quantity = quantity;
                   Provider.of<CartProvider>(context, listen: false)
                       .cartUpdateItem(CartModel(
                       id: cartItem.product!.id.toString(),
@@ -182,10 +195,10 @@ class _CartScreenState extends State<CartScreen> {
             ),
             IconButton(
               onPressed: () {
-                int quantity = cartItem.quantity ?? 0;
+                num quantity = cartItem.quantity ?? 0;
                 quantity++;
                 if (quantity >= 1) {
-                      cartItem.quantity = quantity;
+                  cartItem.quantity = quantity;
                   Provider.of<CartProvider>(context, listen: false)
                       .cartUpdateItem(CartModel(
                       id: cartItem.product!.id.toString(),
@@ -206,7 +219,7 @@ class _CartScreenState extends State<CartScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: const Color(0xffa35555),
+          color: Colors.indigoAccent,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
@@ -222,13 +235,10 @@ class _CartScreenState extends State<CartScreen> {
             ),
             const SizedBox(width: 8),
             TextButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AddShippingAddressView(),
-                  ),
-                );
+              onPressed: () async {
+                ShippingAddress? shippingAddress =
+                await navigatorAddShippingScreen();
+                await getHandleToPlaceOrders(shippingAddress);
               },
               icon: const Icon(Icons.payment, color: Colors.white),
               label: const Text(
@@ -240,5 +250,54 @@ class _CartScreenState extends State<CartScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> getHandleToPlaceOrders(ShippingAddress? shippingAddress) async {
+    if (mounted) {
+      if (shippingAddress != null) {
+        final orderApiProvider =
+        Provider.of<OrderApiProvider>(context, listen: false);
+
+        final cartProvider = Provider.of<CartProvider>(context, listen: false);
+
+        List<CartItem> cartItem = cartProvider.cartResponse?.items ?? [];
+
+        List<OrderItem> orderItemList = [];
+        cartItem.map((item) {
+          if (item.product != null) {
+            OrderItem orderItem = OrderItem(
+              name: item.product!.name,
+              discountAmount: item.product?.discountAmount ?? 0,
+              price: item.product!.price,
+              product: item.product?.id ?? '',
+              quantity: item.quantity ?? 1,
+              totalPrice: (item.product!.price * item.quantity!) ?? 0,
+            );
+            orderItemList.add(orderItem);
+          }
+        }).toList();
+
+        OrderRequestModel orderRequestModel = OrderRequestModel(
+            items: orderItemList, shippingAddress: shippingAddress);
+        await orderApiProvider.placeOrder(orderRequestModel);
+        if (cartProvider.errorMessage == null) {
+          await cartProvider.clearCartItem();
+          await Provider.of<OrderApiProvider>(context, listen: false)
+              .orderResponse();
+        }
+      }
+    }
+  }
+
+  Future<ShippingAddress?> navigatorAddShippingScreen() async {
+    ShippingAddress? shippingAddress = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return const AddShippingAddressView();
+        },
+      ),
+    );
+    return shippingAddress;
   }
 }

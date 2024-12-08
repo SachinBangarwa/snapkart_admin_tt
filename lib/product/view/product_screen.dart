@@ -32,13 +32,15 @@ class _GetProductScreenState extends State<ProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+  centerTitle: true,
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.grey.shade300,
+        backgroundColor:  const Color(0xFFE0F2F1),
         elevation: 0,
         title: const Text(
           ' Product',
           style: TextStyle(
-            color: Colors.black,
+  color: Colors.teal,
+         fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -70,12 +72,12 @@ class _GetProductScreenState extends State<ProductScreen> {
                 itemBuilder: (context, index) {
                   Product product = provider.productList[index];
                   return GestureDetector(
-                    onLongPressStart: (detail)async{
-                        final provider = Provider.of<ProductProvider>(context, listen: false);
+                      onHorizontalDragEnd: (detail) async {
+                    if (detail.primaryVelocity! <= 0) {
+                      final provider = Provider.of<ProductProvider>(context, listen: false);
                       await  provider.deleteProduct(product.id.toString());
                       await provider.fetchProduct();
-
-                    },
+                    }},
                     child: Card(
                       child: ListTile(
                         onTap: () {
